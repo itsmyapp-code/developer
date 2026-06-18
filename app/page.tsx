@@ -77,9 +77,9 @@ export default function VaultDashboard() {
           <Image
             src="/developer.png"
             alt="ITSMYAPP Developer"
-            width={24}
-            height={24}
-            className="opacity-90"
+            width={36}
+            height={36}
+            className="opacity-95"
           />
           <span
             className="text-xs font-bold tracking-widest uppercase"

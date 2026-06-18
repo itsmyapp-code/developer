@@ -137,10 +137,10 @@ export default function LoginPage() {
           <Image
             src="/developer.png"
             alt="ITSMYAPP Developer"
-            width={80}
-            height={80}
+            width={120}
+            height={120}
             priority
-            className="opacity-90"
+            className="opacity-95"
           />
           <div className="text-center">
             <p
