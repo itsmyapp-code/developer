@@ -1,26 +1,237 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─────────────────────────────────────────────
+   VAULT DESIGN TOKENS (Tailwind v4 @theme)
+───────────────────────────────────────────── */
+@theme {
+  --color-vault-bg:       #09090b; /* zinc-950 */
+  --color-vault-panel:    #18181b; /* zinc-900 */
+  --color-vault-border:   #27272a; /* zinc-800 */
+  --color-vault-muted:    #3f3f46; /* zinc-700 */
+  --color-vault-text:     #f4f4f5; /* zinc-100 */
+  --color-vault-dim:      #71717a; /* zinc-500 */
+  --color-vault-accent:   #a3e635; /* lime-400 */
+  --color-vault-accentbg: #3f6212; /* lime-800 */
+
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─────────────────────────────────────────────
+   GLOBAL BASE
+───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  min-width: 1280px;
+  background-color: var(--color-vault-bg);
+  color: var(--color-vault-text);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background-color: var(--color-vault-bg);
+  color: var(--color-vault-text);
+  font-family: var(--font-mono);
+}
+
+/* Selection highlight */
+::selection {
+  background-color: var(--color-vault-accent);
+  color: var(--color-vault-bg);
+}
+
+/* ─────────────────────────────────────────────
+   CUSTOM SCROLLBAR
+───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-vault-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-vault-muted);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-vault-accent);
+}
+
+/* ─────────────────────────────────────────────
+   VAULT PANEL — reusable glass-brutalist panel
+───────────────────────────────────────────── */
+.vault-panel {
+  background: rgba(24, 24, 27, 0.6);
+  border: 1px solid var(--color-vault-border);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
+  position: relative;
+}
+
+.vault-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-vault-border);
+  background: rgba(9, 9, 11, 0.6);
+}
+
+.vault-panel-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-vault-accent);
+}
+
+.vault-panel-index {
+  font-size: 9px;
+  color: var(--color-vault-dim);
+  letter-spacing: 0.08em;
+}
+
+/* ─────────────────────────────────────────────
+   VAULT BUTTON
+───────────────────────────────────────────── */
+.vault-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-vault-border);
+  background: transparent;
+  color: var(--color-vault-dim);
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vault-btn:hover {
+  border-color: var(--color-vault-accent);
+  color: var(--color-vault-accent);
+  background: rgba(163, 230, 53, 0.06);
+}
+
+.vault-btn.active {
+  border-color: var(--color-vault-accent);
+  background: var(--color-vault-accent);
+  color: var(--color-vault-bg);
+}
+
+.vault-btn-extract {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid var(--color-vault-accent);
+  background: rgba(163, 230, 53, 0.08);
+  color: var(--color-vault-accent);
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.vault-btn-extract:hover {
+  background: rgba(163, 230, 53, 0.16);
+}
+
+.vault-btn-extract.copied {
+  background: var(--color-vault-accent);
+  color: var(--color-vault-bg);
+}
+
+@keyframes vault-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0.5); }
+  70%  { box-shadow: 0 0 0 10px rgba(163, 230, 53, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(163, 230, 53, 0); }
+}
+
+.vault-btn-extract.copied {
+  animation: vault-pulse 0.5s ease;
+}
+
+/* ─────────────────────────────────────────────
+   VAULT INPUT
+───────────────────────────────────────────── */
+.vault-input {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: rgba(9, 9, 11, 0.8);
+  border: 1px solid var(--color-vault-border);
+  color: var(--color-vault-text);
+  padding: 8px 12px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s ease;
+}
+
+.vault-input:focus {
+  border-color: var(--color-vault-accent);
+}
+
+.vault-input::placeholder {
+  color: var(--color-vault-muted);
+}
+
+/* ─────────────────────────────────────────────
+   TELEMETRY BAR
+───────────────────────────────────────────── */
+.vault-telemetry {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--color-vault-dim);
+  padding: 6px 14px;
+  border-top: 1px solid var(--color-vault-border);
+  background: rgba(9, 9, 11, 0.8);
+  min-height: 26px;
+  transition: color 0.2s ease;
+}
+
+/* ─────────────────────────────────────────────
+   SCAN-LINE OVERLAY (decorative)
+───────────────────────────────────────────── */
+@keyframes scan {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.vault-scanline::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(163, 230, 53, 0.04) 50%,
+    transparent 100%
+  );
+  animation: scan 8s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ─────────────────────────────────────────────
+   MOBILE OVERRIDE (< 768px)
+───────────────────────────────────────────── */
+@media (max-width: 767px) {
+  html {
+    min-width: 0;
+  }
 }

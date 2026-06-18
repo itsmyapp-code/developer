@@ -1,65 +1,214 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { LogOut, Wifi, WifiOff } from 'lucide-react';
+import { useVaultSession } from '@/lib/vaultSession';
+import { useVaultStorage } from '@/hooks/useVaultStorage';
+import ModeSelector from '@/components/vault/ModeSelector';
+import AssetInventory from '@/components/vault/AssetInventory';
+import ChaosBuffer from '@/components/vault/ChaosBuffer';
+import BlueprintTerminal from '@/components/vault/BlueprintTerminal';
+import VaultDropBox from '@/components/vault/VaultDropBox';
+
+export default function VaultDashboard() {
+  const { user, isReady, signOut } = useVaultSession();
+  const vault = useVaultStorage();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect viewport on mount + resize
+  useEffect(() => {
+    function check() {
+      setIsMobile(window.innerWidth < 768);
+    }
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // Suppress render until auth is resolved
+  if (!isReady) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: 'var(--color-vault-bg)' }}
+      >
+        <div
+          className="text-xs uppercase tracking-widest animate-pulse"
+          style={{ color: 'var(--color-vault-accent)' }}
+        >
+          INITIALISING VAULT SESSION...
+        </div>
+      </div>
+    );
+  }
+
+  // Mobile capture fallback
+  if (isMobile) {
+    return (
+      <VaultDropBox
+        onDeposit={(content, category) =>
+          vault.addVaultDrop({ content, category })
+        }
+      />
+    );
+  }
+
+  // ── Full desktop Bento Grid ──────────────────────────────────────────────
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div
+      className="h-screen flex flex-col overflow-hidden"
+      style={{
+        minWidth: '1280px',
+        backgroundColor: 'var(--color-vault-bg)',
+      }}
+    >
+      {/* ── Top bar ─────────────────────────────────────────────────────── */}
+      <header
+        className="shrink-0 flex items-center justify-between px-4 py-2"
+        style={{
+          borderBottom: '1px solid var(--color-vault-border)',
+          backgroundColor: 'rgba(9,9,11,0.9)',
+          height: '44px',
+        }}
+      >
+        {/* Brand */}
+        <div className="flex items-center gap-3">
+          <Image
+            src="/developer.png"
+            alt="ITSMYAPP Developer"
+            width={24}
+            height={24}
+            className="opacity-90"
+          />
+          <span
+            className="text-xs font-bold tracking-widest uppercase"
+            style={{ color: 'var(--color-vault-accent)' }}
+          >
+            ITSMYAPP VAULT
+          </span>
+          <span
+            className="text-xs"
+            style={{ color: 'var(--color-vault-dim)', fontSize: '9px' }}
+          >
+            developer.itsmyapp.co.uk
+          </span>
+        </div>
+
+        {/* Status bar */}
+        <div className="flex items-center gap-4">
+          {/* Loading indicator */}
+          {vault.isLoading ? (
+            <span
+              className="flex items-center gap-1.5 text-xs animate-pulse"
+              style={{ color: 'var(--color-vault-dim)', fontSize: '9px' }}
+            >
+              <WifiOff size={10} />
+              SYNCING...
+            </span>
+          ) : (
+            <span
+              className="flex items-center gap-1.5 text-xs"
+              style={{ color: 'var(--color-vault-accent)', fontSize: '9px' }}
+            >
+              <Wifi size={10} />
+              FIRESTORE LIVE
+            </span>
+          )}
+
+          {/* User email */}
+          <span
+            className="text-xs"
+            style={{ color: 'var(--color-vault-dim)', fontSize: '9px' }}
+          >
+            {user?.email ?? 'UNKNOWN'}
+          </span>
+
+          {/* Sign out */}
+          <button
+            id="vault-signout-btn"
+            onClick={signOut}
+            title="Sign out"
+            className="flex items-center gap-1.5 text-xs uppercase tracking-wider transition-colors duration-150"
+            style={{ color: 'var(--color-vault-dim)' }}
+            onMouseEnter={(e) =>
+              ((e.currentTarget as HTMLButtonElement).style.color =
+                'var(--color-vault-accent)')
+            }
+            onMouseLeave={(e) =>
+              ((e.currentTarget as HTMLButtonElement).style.color =
+                'var(--color-vault-dim)')
+            }
+          >
+            <LogOut size={11} />
+            EXIT
+          </button>
+        </div>
+      </header>
+
+      {/* ── Bento Grid ──────────────────────────────────────────────────── */}
+      <main
+        className="flex-1 grid overflow-hidden p-2 gap-2"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gridTemplateRows: '1fr 1fr',
+        }}
+      >
+        {/* 01 — Top Left: Mode Selector */}
+        <ModeSelector
+          activeMode={vault.activeMode}
+          projectCodename={vault.projectCodename}
+          onModeChange={vault.setActiveMode}
+          onCodenameChange={vault.setProjectCodename}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {/* 03 — Top Right: Chaos Buffer */}
+        <ChaosBuffer
+          value={vault.chaosBuffer}
+          onChange={vault.setChaosBuffer}
+        />
+
+        {/* 02 — Bottom Left: Asset Inventory */}
+        <AssetInventory
+          selectedAssets={vault.selectedAssets}
+          onToggle={vault.toggleAsset}
+        />
+
+        {/* 04 — Bottom Right: Blueprint Terminal */}
+        <BlueprintTerminal
+          state={{
+            activeMode:     vault.activeMode,
+            projectCodename: vault.projectCodename,
+            selectedAssets: vault.selectedAssets,
+            chaosBuffer:    vault.chaosBuffer,
+            vaultDrops:     vault.vaultDrops,
+          }}
+        />
       </main>
+
+      {/* ── Bottom status bar ───────────────────────────────────────────── */}
+      <footer
+        className="shrink-0 flex items-center justify-between px-4"
+        style={{
+          borderTop: '1px solid var(--color-vault-border)',
+          backgroundColor: 'rgba(9,9,11,0.9)',
+          height: '24px',
+        }}
+      >
+        <span
+          className="text-xs"
+          style={{ color: 'var(--color-vault-dim)', fontSize: '9px' }}
+        >
+          UK GDPR · ZERO-COOKIE · ZERO-SERVER · FIRESTORE OFFLINE-FIRST
+        </span>
+        <span
+          className="text-xs"
+          style={{ color: 'var(--color-vault-dim)', fontSize: '9px' }}
+        >
+          {`MODE=${vault.activeMode.toUpperCase()} · ASSETS=${vault.selectedAssets.length} · itsmyapp.co.uk`}
+        </span>
+      </footer>
     </div>
   );
 }
