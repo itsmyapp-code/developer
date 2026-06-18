@@ -80,23 +80,23 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--color-vault-border);
   background: rgba(9, 9, 11, 0.6);
 }
 
 .vault-panel-label {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-vault-accent);
 }
 
 .vault-panel-index {
-  font-size: 9px;
+  font-size: 11px;
   color: var(--color-vault-dim);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
 /* ─────────────────────────────────────────────
@@ -104,14 +104,14 @@ body {
 ───────────────────────────────────────────── */
 .vault-btn {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   border: 1px solid var(--color-vault-border);
   background: transparent;
   color: var(--color-vault-dim);
-  padding: 8px 14px;
+  padding: 10px 16px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -131,14 +131,14 @@ body {
 .vault-btn-extract {
   width: 100%;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   border: 1px solid var(--color-vault-accent);
   background: rgba(163, 230, 53, 0.08);
   color: var(--color-vault-accent);
-  padding: 12px;
+  padding: 14px;
   cursor: pointer;
   transition: all 0.15s ease;
   position: relative;
@@ -169,11 +169,11 @@ body {
 ───────────────────────────────────────────── */
 .vault-input {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   background: rgba(9, 9, 11, 0.8);
   border: 1px solid var(--color-vault-border);
   color: var(--color-vault-text);
-  padding: 8px 12px;
+  padding: 10px 14px;
   outline: none;
   width: 100%;
   transition: border-color 0.15s ease;
@@ -191,13 +191,13 @@ body {
    TELEMETRY BAR
 ───────────────────────────────────────────── */
 .vault-telemetry {
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
   color: var(--color-vault-dim);
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-top: 1px solid var(--color-vault-border);
   background: rgba(9, 9, 11, 0.8);
-  min-height: 26px;
+  min-height: 30px;
   transition: color 0.2s ease;
 }
 
